@@ -1,0 +1,91 @@
+server:
+  port: 9527
+spring:
+  application:
+    name: yoga-gateway
+  #解决关于documentationPluginsBootstrapper空指针问题
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  main:
+    allow-circular-references: true
+    allow-bean-definition-overriding: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: 'http://localhost:9527/oauth/public-key'
+  redis:
+    host: *.*.*.*
+    port: 6379
+    password: *****
+    database: 0
+  cloud:
+    nacos:
+      discovery:
+        # 服务注册地址
+        server-addr: 127.0.0.1:8848
+    gateway:
+      discovery:      #是否与服务发现组件进行结合，通过 serviceId(必须设置成大写) 转发到具体的服务实例。默认为false，设为true便开启通过服务中心的自动根据 serviceId 创建路由的功能。
+        locator:      #路由访问方式：http://Gateway_HOST:Gateway_PORT/大写的serviceId/**，其中微服务应用名默认大写访问。
+          enabled: true
+      routes:
+        - id: yoga-system
+          uri: lb://yoga-system
+          predicates:
+            - Path=/system/**
+        - id: yoga-auth
+          uri: lb://yoga-auth
+          predicates:
+            - Path=/oauth/**
+        - id: yoga-member
+          uri: lb://yoga-member
+          predicates:
+            - Path=/member/**
+        - id: yoga-course
+          uri: lb://yoga-course
+          predicates:
+            - Path=/course/**
+
+# 配置白名单路径
+security:
+  ignore_urls:
+    - "/oauth/token/**"
+    - "/oauth/public-key/**"
+    # Knife4j
+    - "/webjars/**"
+    - "/doc.html"
+    - "/swagger-resources/**"
+    - "/*/v2/api-docs"
+    - "/captcha/**"
+    - "/favicon.ico"
+    - "/swagger-ui/index.html/**"
+    - "/system/sysUser/regist/**"
+
+feign:
+  httpclient:
+    enabled: true
+  okhttp:
+    enabled: false
+
+swagger:
+  enabled: true
+  groupName: yoga-gateway
+  title: yoga-gateway
+  description: "网关服务"
+  version: 1.0
+  license: "执照"
+  licenseUrl: http://baidu.com
+  terms-of-service-url: http://baidu.com
+  contact:
+    name: tao
+    email: 111111
+    url: http://baidu.com
+  authorization:
+    name: http://baidu.com
+    auth-regex: ^.*$
+    authorization-scope-list:
+      - scope: server
+        description: server all
+
+

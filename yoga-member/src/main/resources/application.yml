@@ -1,0 +1,50 @@
+server:
+  port: 9003
+  servlet:
+    context-path: /member
+spring:
+  application:
+    name: yoga-member
+  #解决关于documentationPluginsBootstrapper空指针问题
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost/yoga?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    username: ***
+    password: *****
+  redis:
+    host: *.*.*.*
+    port: 6379
+    password: **
+    database: 0
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+
+swagger:
+  enabled: true
+  groupName: yoga-member
+  title: yoga-member
+  description: "会员服务"
+  version: 1.0
+  license: "执照"
+  licenseUrl: http://baidu.com
+  terms-of-service-url: http://baidu.com
+  contact:
+    name: tao
+    email: 111111
+    url: http://baidu.com
+  authorization:
+    name: http://baidu.com
+    auth-regex: ^.*$
+    authorization-scope-list:
+      - scope: server
+        description: server all
+

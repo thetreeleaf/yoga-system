@@ -1,0 +1,45 @@
+server:
+  port: 9002
+spring:
+  application:
+    name: yoga-auth
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  main:
+    allow-circular-references: true
+    allow-bean-definition-overriding: true
+  redis:
+    host: *.*.*.*
+    port: 6379
+    password: *****
+    database: 0
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+
+feign:
+  httpclient:
+    enabled: true
+  okhttp:
+    enabled: false
+
+wechat:
+  weapp:
+    appid: *****
+    secret: **
+
+knife4j:
+  password_token_url: http://localhost:9002/doc.html
+
+swagger:
+  enabled: true
+  groupName: yoga-auth
+
+
+springfox:
+  documentation:
+    swagger:
+      v2:
+        path: /oauth/v2/api-docs

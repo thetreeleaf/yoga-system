@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yoga.course.mapper.CourseStateMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.yoga.course.entity.CourseState">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="detail_id" property="detailId" />
+        <result column="state" property="state" />
+        <result column="course_id" property="courseId" />
+        <result column="operation_time" property="operationTime"/>
+        <result column="coach_id" property="coachId"/>
+    </resultMap>
+
+    <select id="listCourseStateWithPage" resultType="com.yoga.course.vo.CourseStatePageVO">
+        SELECT
+        ct.id,
+        ct.user_id,
+        ct.detail_id,
+        ct.state,
+        ct.course_id,
+        ct.operation_time,
+        ct.coach_id,
+        m.nick_name AS nickName,
+        c.course_name AS courseName,
+        coach.coach_name AS coachName,
+        cd.range_time AS rangeTime,
+        cd.week,
+        c.price
+        FROM
+        course_state ct
+        LEFT JOIN course_detail cd ON ct.detail_id = cd.id
+        LEFT JOIN member m ON ct.user_id = m.id
+        LEFT JOIN course c ON ct.course_id = c.id
+        LEFT JOIN coach ON ct.coach_id = coach.coach_id
+        <where>
+            <if test='queryParams.keywords!=null and queryParams.keywords.trim() neq ""'>
+                AND (m.nick_name like concat('%',#{queryParams.keywords},'%')
+                OR c.course_name like concat('%',#{queryParams.keywords},'%')
+                OR coach.coach_name like concat('%',#{queryParams.keywords},'%'))
+            </if>
+            <if test='queryParams.state!=null'>
+                AND ct.state = #{queryParams.state}
+            </if>
+            <if test='queryParams.placeId != 1'>
+                AND c.place_id = #{queryParams.placeId}
+            </if>
+            <if test='queryParams.userId!=null'>
+                AND m.id = #{queryParams.userId}
+            </if>
+        </where>
+    </select>
+</mapper>

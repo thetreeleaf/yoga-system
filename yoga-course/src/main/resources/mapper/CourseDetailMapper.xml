@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yoga.course.mapper.CourseDetailMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.yoga.course.entity.CourseDetail">
+        <id column="id" property="id" />
+        <result column="course_id" property="courseId" />
+        <result column="coach_id" property="coachId" />
+        <result column="range_time" property="rangeTime" />
+        <result column="week" property="week" />
+        <result column="room_id" property="roomId" />
+    </resultMap>
+
+    <select id="listPlaceCourse" resultType="com.yoga.course.vo.CourseDetailVO">
+        SELECT
+        cd.id,
+        cd.course_id AS courseId,
+        cd.coach_id AS coachId,
+        cd.range_time AS rangeTime,
+        cd.week,
+        cd.room_id AS roomId,
+        c.course_name AS courseName,
+        c.course_type AS courseType,
+        r.room_type AS roomType,
+        c.course_desc AS courseDesc,
+        c.price
+        FROM
+        course_detail cd
+        LEFT JOIN course c ON cd.course_id = c.id
+        LEFT JOIN room r ON cd.room_id = r.id
+        <where>
+            <if test='placeId != 1'>
+                AND c.place_id = #{placeId}
+            </if>
+            <if test='queryParams.courseType!=null'>
+                AND c.course_type = #{queryParams.courseType}
+            </if>
+            <if test='queryParams.rangeTime!=null and queryParams.rangeTime.trim() neq ""'>
+                AND cd.range_time = #{queryParams.rangeTime}
+            </if>
+            <if test='queryParams.week!=null and queryParams.week.trim() neq ""'>
+                AND cd.week = #{queryParams.week}
+            </if>
+            <if test='queryParams.date!=null and queryParams.date.trim() neq ""'>
+                OR cd.week = #{queryParams.date}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="getCourse" resultType="com.yoga.course.vo.CourseDetailVO">
+        SELECT
+        cd.id,
+        cd.course_id AS courseId,
+        cd.coach_id AS coachId,
+        cd.range_time AS rangeTime,
+        cd.week,
+        cd.room_id AS roomId,
+        c.course_name AS courseName,
+        c.course_type AS courseType,
+        r.room_type AS roomType,
+        c.course_desc AS courseDesc,
+        c.price
+        FROM
+        course_detail cd
+        LEFT JOIN course c ON cd.course_id = c.id
+        LEFT JOIN room r ON cd.room_id = r.id
+        WHERE c.place_id = #{placeId} AND (cd.week IN
+        <foreach collection="times" item="time" open="(" separator="," close=")">
+            #{time}
+        </foreach>
+        OR cd.week IN
+        <foreach collection="weeks" item="week" open="(" separator="," close=")">
+            #{week}
+        </foreach>
+        )
+    </select>
+
+
+</mapper>

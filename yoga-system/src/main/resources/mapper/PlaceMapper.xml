@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yoga.system.mapper.PlaceMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.yoga.system.entity.Place">
+        <id column="id" property="id" />
+        <result column="place_name" property="placeName" />
+        <result column="address" property="address" />
+        <result column="phone" property="phone" />
+        <result column="place_picture" property="placePicture" />
+        <result column="deleted" property="deleted" />
+    </resultMap>
+
+
+    <select id="listPlacesWithPage" resultType="com.yoga.system.vo.PlacePageVO">
+        SELECT
+        p.id,
+        p.place_name AS placeName,
+        p.address,
+        p.phone,
+        p.place_picture AS placePicture,
+        p.deleted
+        FROM
+        place p
+        <where>
+            p.deleted = 0 AND p.id != 1
+            <if test='queryParams.keywords!=null and queryParams.keywords.trim() neq ""'>
+                AND (p.place_name like concat('%',#{queryParams.keywords},'%')
+                OR p.address like concat('%',#{queryParams.keywords},'%')
+                OR p.phone like concat('%',#{queryParams.keywords},'%'))
+            </if>
+            <if test='queryParams.placeId != 1'>
+                AND p.id = #{queryParams.placeId}
+            </if>
+        </where>
+
+
+    </select>
+    <select id="getPlaceNum" resultType="java.lang.Integer">
+        select
+        count(*) placeSum
+        from
+        place
+        where
+            deleted = 0 and id != 1;
+    </select>
+
+</mapper>

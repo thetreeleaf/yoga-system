@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yoga.system.mapper.SysMenuMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.yoga.system.entity.SysMenu">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="parent_id" property="parentId" />
+        <result column="path" property="path" />
+        <result column="component" property="component" />
+        <result column="icon" property="icon" />
+        <result column="sort" property="sort" />
+        <result column="visible" property="visible" />
+        <result column="redirect" property="redirect" />
+        <result column="gmt_create" property="gmtCreate" />
+        <result column="gmt_modified" property="gmtModified" />
+        <collection property="roles" ofType="string" javaType="list">
+            <result column="code"/>
+        </collection>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id
+        ,name,parent_id,
+        path,component,redirect,
+        icon,sort,visible,
+        gmt_create,gmt_modified
+    </sql>
+
+    <select id="listRoutes" resultMap="BaseResultMap">
+        select t1.id,
+               t1.name,
+               t1.parent_id,
+               t1.path,
+               t1.component,
+               t1.icon,
+               t1.sort,
+               t1.visible,
+               t1.redirect,
+               t3.code
+        from sys_menu t1
+                 left join sys_role_menu t2 on t1.id = t2.menu_id
+                 left join sys_role t3 on t2.role_id = t3.id
+        where t1.visible =${@com.yoga.common.constant.GlobalConstants@STATUS_YES}
+        order by t1.sort asc
+    </select>
+
+
+    <select id="getMicroService" resultType="com.yoga.system.vo.ServiceNameVo">
+        select t1.id,
+               SUBSTR(t1.path,2) name
+        from sys_menu t1
+        where t1.parent_id = 0
+    </select>
+</mapper>
